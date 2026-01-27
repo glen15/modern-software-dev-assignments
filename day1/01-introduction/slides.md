@@ -4,8 +4,6 @@
 
 > **"여러분이 안 만들면 아무도 안 만듭니다. 책임감을 갖고 멈추지 말고 시도하십시오."** - 앤드류 응
 
-📺 참고 영상: [Andrew Ng - AI 시대, 개발자는 어떻게 살아남는가](https://youtu.be/vENN6-d_3AQ)
-
 ---
 
 ## 1. AI 발전 속도: 우리의 오해
@@ -163,7 +161,12 @@ AI 활용 개발:
 ### AI IDE (통합 개발 환경)
 
 - **AWS Kiro**: Spec 기반 개발, 에이전트 지원
-- **Google Jules**: GitHub 통합, 비동기 작업
+- **Google Antigravity**: 자연어 기반 풀스택 앱 생성
+
+### Vibe 코딩 툴
+
+- **Replit Agent**: 브라우저 기반, 즉시 실행 및 배포
+- **Lovable**: 노코드/로우코드 풀스택 앱 빌더
 
 ### 코드 자동 완성
 
@@ -284,7 +287,8 @@ AI 활용 개발:
 
 ### AI 코딩 도구
 
-- **AWS Kiro / Google Jules**: AI 네이티브 IDE
+- **AWS Kiro / Google Antigravity**: AI 네이티브 IDE
+- **Replit Agent / Lovable**: Vibe 코딩 툴
 - **Claude Code**: 터미널 기반 AI 에이전트 (스킬, 에이전트, MCP)
 
 ---

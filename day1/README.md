@@ -42,7 +42,8 @@
 
 ### 세션 4: AI 코딩 도구 실습 (04-ai-coding-tools/)
 
-- AI IDE (AWS Kiro / Google Jules)
+- AI IDE (AWS Kiro / Google Antigravity)
+- Vibe 코딩 툴 (Replit Agent / Lovable)
 - Claude Code 스킬과 에이전트
 - MCP (Model Context Protocol) 활용
 
