@@ -53,6 +53,27 @@
 
 ---
 
+## 심화 자료 (05-advanced/)
+
+워크샵 이후 더 깊이 학습하고 싶은 분들을 위한 자료입니다.
+
+### MCP 서버 구축 (mcp-server/)
+- MCP (Model Context Protocol) 이해
+- TypeScript로 커스텀 MCP 서버 만들기
+- Claude Code와 연동
+
+### Claude Code 자동화 (claude-automation/)
+- 비대화형 모드 (`-p` 플래그) 활용
+- 쉘 스크립트로 자동화
+- GitHub Actions CI/CD 통합
+
+### Warp 터미널 + Multi-Agent (warp-multiagent/)
+- Warp 터미널 AI 기능 활용
+- Warp와 Claude Code 조합
+- 병렬 분석, 파이프라인 등 멀티 에이전트 패턴
+
+---
+
 ## 사전 준비
 
 1. Python 3.11 이상 설치

@@ -59,6 +59,18 @@
 
 ---
 
+## 심화 자료 (05-advanced/)
+
+워크샵 이후 더 깊이 학습하고 싶은 분들을 위한 자료입니다.
+
+### Graphite 스택형 코드 리뷰 (graphite-review/)
+- 스택형 PR (Stacked PR) 워크플로우
+- Graphite CLI로 PR 스택 관리
+- AI 코드 리뷰 기능 활용
+- 팀 협업 및 충돌 해결
+
+---
+
 ## 사전 준비
 
 1. Semgrep 설치:
