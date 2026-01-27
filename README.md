@@ -1,27 +1,139 @@
-# Assignments for CS146S: The Modern Software Developer
+# AI 기반 소프트웨어 개발 워크샵
 
-This is the home of the assignments for [CS146S: The Modern Software Developer](https://themodernsoftware.dev), taught at Stanford University fall 2025.
+## 개요
 
-## Repo Setup
-These steps work with Python 3.12.
+3일 집중 워크샵으로 AI 도구를 활용한 현대적 소프트웨어 개발 방법을 배웁니다.
 
-1. Install Anaconda
-   - Download and install: [Anaconda Individual Edition](https://www.anaconda.com/download)
-   - Open a new terminal so `conda` is on your `PATH`.
+**기간**: 3일 (24시간)
+**대상**: 대학생, 교수, 공공기관 직원 (입문~심화 혼합)
 
-2. Create and activate a Conda environment (Python 3.12)
-   ```bash
-   conda create -n cs146s python=3.12 -y
-   conda activate cs146s
-   ```
+---
 
-3. Install Poetry
-   ```bash
-   curl -sSL https://install.python-poetry.org | python -
-   ```
+## 커리큘럼
 
-4. Install project dependencies with Poetry (inside the activated Conda env)
-   From the repository root:
-   ```bash
-   poetry install --no-interaction
-   ```
+| Day | 주제 | 핵심 내용 |
+|-----|------|----------|
+| [Day 1](./day1/) | AI 활용 필요성 + 사용 방법 | 프롬프팅, AI 코딩 도구 |
+| [Day 2](./day2/) | 개발 및 보안 품질 | Semgrep, 코드 리뷰, 테스트 |
+| [Day 3](./day3/) | 팀 프로젝트 | 팀 협업, 프로젝트 완성 |
+
+---
+
+## 일정 상세
+
+### Day 1: AI 활용 필요성과 사용 방법 (8시간)
+
+| 시간 | 세션 |
+|------|------|
+| 09:00-09:30 | 오프닝 |
+| 09:30-10:30 | AI 활용 필요성 (이론) |
+| 10:45-12:00 | 프롬프팅 기초 (K-shot, CoT) |
+| 13:00-14:30 | 프롬프팅 심화 (RAG, Tool Calling) |
+| 14:45-16:15 | AI 코딩 도구 실습 (Cursor, Claude Code) |
+| 16:30-17:30 | 개인 실습 과제 |
+
+### Day 2: 개발 및 보안 품질 (8시간)
+
+| 시간 | 세션 |
+|------|------|
+| 09:15-10:15 | 보안 기초 (OWASP Top 10) |
+| 10:30-12:00 | Semgrep 보안 스캔 실습 |
+| 13:00-14:00 | 코드 리뷰 기초 |
+| 14:15-15:45 | 수동 리뷰 + AI 보조 실습 |
+| 16:00-17:00 | 테스트 작성 (pytest) |
+| 17:00-17:45 | 통합 과제 |
+
+### Day 3: 팀 프로젝트 (8시간)
+
+| 시간 | 세션 |
+|------|------|
+| 09:00-10:00 | 킥오프 (팀 구성, 프로젝트 선정) |
+| 10:15-12:00 | 스프린트 1 (기획 + 기본 구현) |
+| 13:00-14:30 | 스프린트 2 (핵심 기능 구현) |
+| 14:45-16:15 | 스프린트 3 (보안 검토 + 테스트) |
+| 16:30-17:15 | 데모 준비 |
+| 17:15-18:00 | 데모 + 클로징 |
+
+---
+
+## 시작하기
+
+### 1. 환경 설정
+
+[SETUP.md](./SETUP.md)를 참고하여 개발 환경을 설정하세요.
+
+### 2. Day별 자료
+
+- [Day 1: AI 활용](./day1/README.md)
+- [Day 2: 보안/품질](./day2/README.md)
+- [Day 3: 팀프로젝트](./day3/README.md)
+
+### 3. 참고 자료
+
+- [치트시트](./resources/cheatsheets/)
+- [원본 Stanford 강의 자료](./origin/)
+
+---
+
+## 폴더 구조
+
+```
+modern-software-dev-assignments/
+├── day1/                    # Day 1: AI 활용
+│   ├── 01-introduction/
+│   ├── 02-prompting-basics/
+│   ├── 03-prompting-advanced/
+│   ├── 04-ai-coding-tools/
+│   └── assignments/
+├── day2/                    # Day 2: 보안/품질
+│   ├── 01-security-intro/
+│   ├── 02-semgrep-scan/
+│   ├── 03-code-review/
+│   ├── 04-testing-quality/
+│   └── assignments/
+├── day3/                    # Day 3: 팀프로젝트
+│   ├── 01-project-kickoff/
+│   ├── 02-starter-app/
+│   └── demo/
+├── resources/               # 공통 자료
+│   └── cheatsheets/
+├── origin/                  # 원본 Stanford 강의 자료
+├── SETUP.md                 # 환경 설정 가이드
+└── README.md                # 이 파일
+```
+
+---
+
+## 학습 목표
+
+워크샵을 마치면 다음을 할 수 있습니다:
+
+- [ ] AI 도구를 활용하여 생산성 있게 코딩할 수 있다
+- [ ] 효과적인 프롬프트를 작성할 수 있다
+- [ ] 보안 취약점을 탐지하고 수정할 수 있다
+- [ ] 코드 리뷰와 테스트를 통해 품질을 향상시킬 수 있다
+- [ ] 팀으로 협업하여 프로젝트를 완성할 수 있다
+
+---
+
+## 난이도 조절
+
+| 구분 | 입문자 | 심화자 |
+|------|--------|--------|
+| Day 1 | 템플릿 프롬프트 수정 | 프롬프트 직접 설계 |
+| Day 2 | 취약점 1개 수정 | 취약점 3개+ 수정 + PR |
+| Day 3 | 스타터앱 기능 추가 | 새 도메인 앱 구현 |
+
+---
+
+## 문의
+
+- 워크샵 관련 문의: [담당자 이메일]
+- 자료 관련 이슈: GitHub Issues
+
+---
+
+## 라이선스
+
+교육 목적으로 자유롭게 사용할 수 있습니다.
+원본 자료: Stanford CS146S

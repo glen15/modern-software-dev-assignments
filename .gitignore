@@ -52,3 +52,10 @@ Thumbs.db
 
 # Vercel
 .vercel/*
+
+# Claude Code (개인 설정 및 스킬셋)
+.mcp.json
+.claude/
+
+# Node
+node_modules/
