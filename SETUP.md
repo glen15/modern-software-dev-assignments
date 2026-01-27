@@ -57,31 +57,34 @@ brew install git
 
 ## Day 1 준비
 
-### Ollama (로컬 LLM)
+### AI 모델 설정 (Gemini 또는 Bedrock 중 선택)
+
+#### 옵션 A: Google Gemini API
+
+1. [Google AI Studio](https://aistudio.google.com/)에서 API 키 발급
+2. 환경 변수 설정:
 
 ```bash
-# Mac
-brew install ollama
-
-# Linux
-curl -fsSL https://ollama.com/install.sh | sh
-
-# Windows
-# ollama.com에서 다운로드
+export GEMINI_API_KEY="your-api-key-here"
+# 또는 .env 파일에 추가
+echo "GEMINI_API_KEY=your-api-key-here" >> .env
 ```
 
-#### 모델 다운로드
+#### 옵션 B: Amazon Bedrock (Nova 모델)
+
+1. AWS 계정 및 Bedrock 접근 권한 필요
+2. AWS CLI 설정:
 
 ```bash
-# Ollama 서버 시작 (백그라운드)
-ollama serve &
+aws configure
+# AWS Access Key ID, Secret Access Key, Region 입력
+```
 
-# 필요한 모델 다운로드
-ollama pull llama3.1:8b
-ollama pull mistral-nemo:12b
+3. 환경 변수 설정 (선택):
 
-# 모델 확인
-ollama list
+```bash
+export AWS_REGION="us-east-1"
+export BEDROCK_MODEL_ID="amazon.nova-lite-v1:0"
 ```
 
 ### Python 패키지
@@ -93,7 +96,7 @@ source venv/bin/activate  # Mac/Linux
 # venv\Scripts\activate   # Windows
 
 # 패키지 설치
-pip install ollama python-dotenv
+pip install python-dotenv google-generativeai boto3
 ```
 
 ### 코드 에디터
@@ -155,15 +158,12 @@ source venv/bin/activate
 
 # Python 패키지
 pip install --upgrade pip
-pip install ollama python-dotenv
+pip install python-dotenv google-generativeai boto3
 pip install semgrep pytest pytest-cov
 pip install fastapi uvicorn sqlalchemy
 
-# Ollama 모델 (Ollama가 설치되어 있어야 함)
-ollama pull llama3.1:8b
-ollama pull mistral-nemo:12b
-
 echo "설치 완료!"
+echo "GEMINI_API_KEY 또는 AWS 자격증명을 설정하세요."
 ```
 
 ### 설치 확인
@@ -173,10 +173,10 @@ echo "설치 완료!"
 python3 --version
 
 # 패키지
-pip list | grep -E "ollama|semgrep|pytest|fastapi"
+pip list | grep -E "google-generativeai|boto3|semgrep|pytest|fastapi"
 
-# Ollama
-ollama list
+# AWS (Bedrock 사용 시)
+aws sts get-caller-identity
 
 # Git
 git --version
@@ -210,14 +210,30 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Ollama 연결 오류
+### Gemini API 오류
 
 ```bash
-# Ollama 서버 상태 확인
-curl http://localhost:11434/api/tags
+# API 키 확인
+echo $GEMINI_API_KEY
 
-# 서버가 실행 중이 아니면
-ollama serve
+# 테스트 호출
+python3 -c "
+import google.generativeai as genai
+import os
+genai.configure(api_key=os.environ['GEMINI_API_KEY'])
+model = genai.GenerativeModel('gemini-1.5-flash')
+print(model.generate_content('Hello').text)
+"
+```
+
+### Bedrock 연결 오류
+
+```bash
+# AWS 자격증명 확인
+aws sts get-caller-identity
+
+# Bedrock 모델 접근 확인
+aws bedrock list-foundation-models --query "modelSummaries[?contains(modelId, 'nova')]"
 ```
 
 ### Semgrep 실행 오류
@@ -247,7 +263,9 @@ semgrep --clear-cache
 
 - [ ] Python 3.11+ 설치됨
 - [ ] Git 설치됨
-- [ ] Ollama 설치 및 모델 다운로드 완료
+- [ ] AI API 설정 완료 (아래 중 택1)
+  - [ ] Gemini API 키 설정됨
+  - [ ] AWS 자격증명 및 Bedrock 접근 권한
 - [ ] 필요한 Python 패키지 설치됨
 - [ ] 코드 에디터 (Cursor 또는 VS Code) 설치됨
 - [ ] Semgrep 설치됨

@@ -16,11 +16,17 @@
 
 ## 실습 파일
 
-| 파일 | 설명 |
-|------|------|
-| `k_shot_prompting.py` | K-shot 프롬프팅 실습 |
-| `chain_of_thought.py` | Chain of Thought 실습 |
-| `self_consistency_prompting.py` | Self-Consistency 실습 |
+실습 파일은 사용하는 AI 서비스에 따라 선택하세요:
+
+| 폴더 | AI 서비스 |
+|------|----------|
+| `gemini/` | Google Gemini API |
+| `bedrock/` | Amazon Bedrock (Nova) |
+
+각 폴더에 동일한 실습 파일이 있습니다:
+- `k_shot_prompting.py` - K-shot 프롬프팅 실습
+- `chain_of_thought.py` - Chain of Thought 실습
+- `self_consistency_prompting.py` - Self-Consistency 실습
 
 ---
 
@@ -58,8 +64,11 @@ Few-shot:  예시 2~5개 + 질문
 문자열 뒤집기 문제를 K-shot으로 해결합니다.
 
 ```bash
-# 파일 열기
-python k_shot_prompting.py
+# Gemini 사용 시
+python gemini/k_shot_prompting.py
+
+# Bedrock 사용 시
+python bedrock/k_shot_prompting.py
 ```
 
 **과제**: `YOUR_SYSTEM_PROMPT`에 예시를 포함한 프롬프트를 작성하세요.
@@ -117,7 +126,7 @@ A: 단계별로 풀어보겠습니다.
 수학 문제를 CoT로 해결합니다.
 
 ```bash
-python chain_of_thought.py
+python gemini/chain_of_thought.py  # 또는 bedrock/chain_of_thought.py
 ```
 
 **과제**: `YOUR_SYSTEM_PROMPT`에 단계별 사고를 유도하는 프롬프트를 작성하세요.
@@ -162,7 +171,7 @@ YOUR_SYSTEM_PROMPT = """
 ### 실습: self_consistency_prompting.py
 
 ```bash
-python self_consistency_prompting.py
+python gemini/self_consistency_prompting.py  # 또는 bedrock/self_consistency_prompting.py
 ```
 
 ---

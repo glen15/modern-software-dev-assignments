@@ -3,11 +3,31 @@
 ## 실습 환경 확인
 
 ```bash
-# 필요한 모델 확인
-ollama list
+# Gemini 사용 시
+echo $GEMINI_API_KEY  # API 키가 설정되어 있어야 함
 
-# llama3.1:8b 모델이 없다면 다운로드
-ollama pull llama3.1:8b
+# Bedrock 사용 시
+aws sts get-caller-identity  # AWS 자격증명 확인
+```
+
+---
+
+## 폴더 구조
+
+실습 파일은 사용하는 AI 서비스에 따라 선택하세요:
+
+```
+03-prompting-advanced/
+├── gemini/           # Google Gemini API 사용
+│   ├── rag.py
+│   ├── tool_calling.py
+│   └── reflexion.py
+├── bedrock/          # Amazon Bedrock (Nova) 사용
+│   ├── rag.py
+│   ├── tool_calling.py
+│   └── reflexion.py
+└── data/
+    └── api_docs.txt  # RAG 실습용 문서
 ```
 
 ---
@@ -18,7 +38,8 @@ ollama pull llama3.1:8b
 외부 API 문서를 기반으로 정확한 코드를 생성하세요.
 
 ### 파일
-- `rag.py` - 메인 실습 파일
+- Gemini: `gemini/rag.py`
+- Bedrock: `bedrock/rag.py`
 - `data/api_docs.txt` - API 문서
 
 ### 문제
@@ -37,7 +58,7 @@ API 문서를 참조하여 `fetch_user_name` 함수를 생성해야 합니다.
 
 3. 테스트 실행:
    ```bash
-   python rag.py
+   python gemini/rag.py  # 또는 bedrock/rag.py
    ```
 
 ### 힌트: CONTEXT_PROVIDER 구현
@@ -80,7 +101,8 @@ YOUR_SYSTEM_PROMPT = """
 LLM이 올바른 형식의 도구 호출 JSON을 생성하도록 하세요.
 
 ### 파일
-`tool_calling.py`
+- Gemini: `gemini/tool_calling.py`
+- Bedrock: `bedrock/tool_calling.py`
 
 ### 문제
 `output_every_func_return_type` 도구를 호출하는 JSON을 생성해야 합니다.
@@ -91,7 +113,7 @@ LLM이 올바른 형식의 도구 호출 JSON을 생성하도록 하세요.
 2. `YOUR_SYSTEM_PROMPT`를 작성하세요
 3. 테스트 실행:
    ```bash
-   python tool_calling.py
+   python gemini/tool_calling.py  # 또는 bedrock/tool_calling.py
    ```
 
 ### 기대하는 LLM 출력
@@ -142,14 +164,15 @@ JSON 외의 다른 텍스트는 출력하지 마세요.
 AI가 자기 출력을 검토하고 개선하는 과정을 이해하세요.
 
 ### 파일
-`reflexion.py`
+- Gemini: `gemini/reflexion.py`
+- Bedrock: `bedrock/reflexion.py`
 
 ### 단계
 
 1. 코드를 읽고 Reflexion 루프를 이해하세요
 2. 실행하여 개선 과정을 관찰하세요:
    ```bash
-   python reflexion.py
+   python gemini/reflexion.py  # 또는 bedrock/reflexion.py
    ```
 
 ---

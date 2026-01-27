@@ -2,9 +2,11 @@ import os
 import re
 from collections import Counter
 from dotenv import load_dotenv
-from ollama import chat
+import google.generativeai as genai
 
 load_dotenv()
+
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
 NUM_RUNS_TIMES = 5
 
@@ -44,18 +46,19 @@ def test_your_prompt(system_prompt: str) -> bool:
 
     Prints "SUCCESS" if the majority answer equals EXPECTED_OUTPUT.
     """
+    model = genai.GenerativeModel(
+        "gemini-1.5-flash",
+        system_instruction=system_prompt if system_prompt else None,
+    )
+
     answers: list[str] = []
     for idx in range(NUM_RUNS_TIMES):
         print(f"Running test {idx + 1} of {NUM_RUNS_TIMES}")
-        response = chat(
-            model="llama3.1:8b",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": USER_PROMPT},
-            ],
-            options={"temperature": 1},
+        response = model.generate_content(
+            USER_PROMPT,
+            generation_config=genai.GenerationConfig(temperature=1.0),
         )
-        output_text = response.message.content
+        output_text = response.text
         final_answer = extract_final_answer(output_text)
         print(f"Run {idx + 1} answer: {final_answer}")
         answers.append(final_answer.strip())
@@ -82,5 +85,3 @@ def test_your_prompt(system_prompt: str) -> bool:
 
 if __name__ == "__main__":
     test_your_prompt(YOUR_SYSTEM_PROMPT)
-
-

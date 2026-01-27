@@ -1,8 +1,10 @@
 import os
 from dotenv import load_dotenv
-from ollama import chat
+import google.generativeai as genai
 
 load_dotenv()
+
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
 NUM_RUNS_TIMES = 5
 
@@ -18,22 +20,24 @@ httpstatus
 
 EXPECTED_OUTPUT = "sutatsptth"
 
+
 def test_your_prompt(system_prompt: str) -> bool:
     """Run the prompt up to NUM_RUNS_TIMES and return True if any output matches EXPECTED_OUTPUT.
 
     Prints "SUCCESS" when a match is found.
     """
+    model = genai.GenerativeModel(
+        "gemini-1.5-flash",
+        system_instruction=system_prompt if system_prompt else None,
+    )
+
     for idx in range(NUM_RUNS_TIMES):
         print(f"Running test {idx + 1} of {NUM_RUNS_TIMES}")
-        response = chat(
-            model="mistral-nemo:12b",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": USER_PROMPT},
-            ],
-            options={"temperature": 0.5},
+        response = model.generate_content(
+            USER_PROMPT,
+            generation_config=genai.GenerationConfig(temperature=0.5),
         )
-        output_text = response.message.content.strip()
+        output_text = response.text.strip()
         if output_text.strip() == EXPECTED_OUTPUT.strip():
             print("SUCCESS")
             return True
@@ -41,6 +45,7 @@ def test_your_prompt(system_prompt: str) -> bool:
             print(f"Expected output: {EXPECTED_OUTPUT}")
             print(f"Actual output: {output_text}")
     return False
+
 
 if __name__ == "__main__":
     test_your_prompt(YOUR_SYSTEM_PROMPT)

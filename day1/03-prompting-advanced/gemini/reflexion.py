@@ -2,9 +2,11 @@ import os
 import re
 from typing import Callable, List, Tuple
 from dotenv import load_dotenv
-from ollama import chat
+import google.generativeai as genai
 
 load_dotenv()
+
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
 NUM_RUNS_TIMES = 1
 
@@ -53,7 +55,7 @@ def evaluate_function(func: Callable[[str], bool]) -> Tuple[bool, List[str]]:
         try:
             result = bool(func(pw))
         except Exception as exc:
-            failures.append(f"Input: {pw} → raised exception: {exc}")
+            failures.append(f"Input: {pw} -> raised exception: {exc}")
             continue
 
         if result != expected:
@@ -73,22 +75,23 @@ def evaluate_function(func: Callable[[str], bool]) -> Tuple[bool, List[str]]:
                 reasons.append("has whitespace")
 
             failures.append(
-                f"Input: {pw} → expected {expected}, got {result}. Failing checks: {', '.join(reasons) or 'unknown'}"
+                f"Input: {pw} -> expected {expected}, got {result}. Failing checks: {', '.join(reasons) or 'unknown'}"
             )
 
     return (len(failures) == 0, failures)
 
 
 def generate_initial_function(system_prompt: str) -> str:
-    response = chat(
-        model="llama3.1:8b",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": "Provide the implementation now."},
-        ],
-        options={"temperature": 0.2},
+    model = genai.GenerativeModel(
+        "gemini-1.5-flash",
+        system_instruction=system_prompt if system_prompt else None,
     )
-    return extract_code_block(response.message.content)
+
+    response = model.generate_content(
+        "Provide the implementation now.",
+        generation_config=genai.GenerationConfig(temperature=0.2),
+    )
+    return extract_code_block(response.text)
 
 
 def your_build_reflexion_context(prev_code: str, failures: List[str]) -> str:
@@ -107,15 +110,17 @@ def apply_reflexion(
 ) -> str:
     reflection_context = build_context(prev_code, failures)
     print(f"REFLECTION CONTEXT: {reflection_context}, {reflexion_prompt}")
-    response = chat(
-        model="llama3.1:8b",
-        messages=[
-            {"role": "system", "content": reflexion_prompt},
-            {"role": "user", "content": reflection_context},
-        ],
-        options={"temperature": 0.2},
+
+    model = genai.GenerativeModel(
+        "gemini-1.5-flash",
+        system_instruction=reflexion_prompt if reflexion_prompt else None,
     )
-    return extract_code_block(response.message.content)
+
+    response = model.generate_content(
+        reflection_context,
+        generation_config=genai.GenerationConfig(temperature=0.2),
+    )
+    return extract_code_block(response.text)
 
 
 def run_reflexion_flow(

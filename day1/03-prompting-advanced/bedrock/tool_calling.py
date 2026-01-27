@@ -1,12 +1,19 @@
 import ast
 import json
 import os
+import boto3
 from typing import Any, Dict, List, Optional, Tuple, Callable
-
 from dotenv import load_dotenv
-from ollama import chat
 
 load_dotenv()
+
+# Bedrock client setup
+bedrock = boto3.client(
+    "bedrock-runtime",
+    region_name=os.environ.get("AWS_REGION", "us-east-1"),
+)
+
+MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "amazon.nova-lite-v1:0")
 
 NUM_RUNS_TIMES = 3
 
@@ -99,16 +106,32 @@ def extract_tool_call(text: str) -> Dict[str, Any]:
         raise ValueError("Model did not return valid JSON for the tool call")
 
 
-def run_model_for_tool_call(system_prompt: str) -> Dict[str, Any]:
-    response = chat(
-        model="llama3.1:8b",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": "Call the tool now."},
-        ],
-        options={"temperature": 0.3},
+def call_bedrock(system_prompt: str, user_prompt: str, temperature: float = 0.3) -> str:
+    """Call Bedrock Nova model and return the response text."""
+    messages = [{"role": "user", "content": [{"text": user_prompt}]}]
+
+    body = {
+        "messages": messages,
+        "inferenceConfig": {
+            "temperature": temperature,
+            "maxTokens": 1024,
+        },
+    }
+
+    if system_prompt:
+        body["system"] = [{"text": system_prompt}]
+
+    response = bedrock.invoke_model(
+        modelId=MODEL_ID,
+        body=json.dumps(body),
     )
-    content = response.message.content
+
+    response_body = json.loads(response["body"].read())
+    return response_body["output"]["message"]["content"][0]["text"]
+
+
+def run_model_for_tool_call(system_prompt: str) -> Dict[str, Any]:
+    content = call_bedrock(system_prompt, "Call the tool now.", temperature=0.3)
     return extract_tool_call(content)
 
 

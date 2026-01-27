@@ -3,12 +3,29 @@
 ## 실습 환경 확인
 
 ```bash
-# Ollama 설치 확인
-ollama --version
+# Gemini 사용 시
+echo $GEMINI_API_KEY  # API 키가 설정되어 있어야 함
 
-# 필요한 모델 다운로드
-ollama pull mistral-nemo:12b
-ollama pull llama3.1:8b
+# Bedrock 사용 시
+aws sts get-caller-identity  # AWS 자격증명 확인
+```
+
+---
+
+## 폴더 구조
+
+실습 파일은 사용하는 AI 서비스에 따라 선택하세요:
+
+```
+02-prompting-basics/
+├── gemini/           # Google Gemini API 사용
+│   ├── k_shot_prompting.py
+│   ├── chain_of_thought.py
+│   └── self_consistency_prompting.py
+└── bedrock/          # Amazon Bedrock (Nova) 사용
+    ├── k_shot_prompting.py
+    ├── chain_of_thought.py
+    └── self_consistency_prompting.py
 ```
 
 ---
@@ -19,7 +36,8 @@ ollama pull llama3.1:8b
 문자열을 뒤집는 작업을 K-shot 프롬프팅으로 성공시키세요.
 
 ### 파일
-`k_shot_prompting.py`
+- Gemini: `gemini/k_shot_prompting.py`
+- Bedrock: `bedrock/k_shot_prompting.py`
 
 ### 문제
 "httpstatus"를 뒤집어 "sutatsptth"를 출력해야 합니다.
@@ -28,7 +46,7 @@ ollama pull llama3.1:8b
 
 1. 파일을 열고 `YOUR_SYSTEM_PROMPT`를 확인하세요
 2. 예시를 포함한 시스템 프롬프트를 작성하세요
-3. `python k_shot_prompting.py`로 테스트하세요
+3. `python gemini/k_shot_prompting.py` (또는 `bedrock/...`)로 테스트하세요
 4. "SUCCESS"가 출력될 때까지 프롬프트를 개선하세요
 
 ### 힌트
@@ -63,7 +81,8 @@ YOUR_SYSTEM_PROMPT = """
 복잡한 수학 문제를 CoT 기법으로 해결하세요.
 
 ### 파일
-`chain_of_thought.py`
+- Gemini: `gemini/chain_of_thought.py`
+- Bedrock: `bedrock/chain_of_thought.py`
 
 ### 문제
 `3^12345 mod 100` 을 계산하여 `Answer: 43`을 출력해야 합니다.
@@ -72,7 +91,7 @@ YOUR_SYSTEM_PROMPT = """
 
 1. 파일을 열고 `YOUR_SYSTEM_PROMPT`를 확인하세요
 2. 단계별 사고를 유도하는 프롬프트를 작성하세요
-3. `python chain_of_thought.py`로 테스트하세요
+3. `python gemini/chain_of_thought.py` (또는 `bedrock/...`)로 테스트하세요
 4. "SUCCESS"가 출력될 때까지 프롬프트를 개선하세요
 
 ### 힌트
@@ -106,12 +125,13 @@ YOUR_SYSTEM_PROMPT = """
 여러 번의 추론을 통해 일관된 답을 얻는 원리를 이해하세요.
 
 ### 파일
-`self_consistency_prompting.py`
+- Gemini: `gemini/self_consistency_prompting.py`
+- Bedrock: `bedrock/self_consistency_prompting.py`
 
 ### 단계
 
 1. 파일 코드를 읽고 Self-Consistency가 어떻게 구현되어 있는지 파악하세요
-2. `python self_consistency_prompting.py`로 실행하세요
+2. `python gemini/self_consistency_prompting.py` (또는 `bedrock/...`)로 실행하세요
 3. 여러 번 실행하여 결과의 일관성을 확인하세요
 
 ---
