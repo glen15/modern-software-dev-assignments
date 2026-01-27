@@ -42,9 +42,9 @@
 
 ### 세션 4: AI 코딩 도구 실습 (04-ai-coding-tools/)
 
-- Cursor 사용법
-- Claude Code 사용법
-- 효과적인 활용 팁
+- AI IDE (AWS Kiro / Google Jules)
+- Claude Code 스킬과 에이전트
+- MCP (Model Context Protocol) 활용
 
 ### 세션 5: 개인 실습 과제 (assignments/)
 
@@ -62,23 +62,24 @@
 - TypeScript로 커스텀 MCP 서버 만들기
 - Claude Code와 연동
 
-### Claude Code 자동화 (claude-automation/)
-- 비대화형 모드 (`-p` 플래그) 활용
-- 쉘 스크립트로 자동화
-- GitHub Actions CI/CD 통합
+### Claude Code 스킬과 에이전트 (claude-skills/)
+- 커스텀 스킬 정의 및 활용
+- 에이전트 아키텍처 이해
+- 복잡한 워크플로우 구성
 
-### Warp 터미널 + Multi-Agent (warp-multiagent/)
-- Warp 터미널 AI 기능 활용
-- Warp와 Claude Code 조합
-- 병렬 분석, 파이프라인 등 멀티 에이전트 패턴
+### Multi-Agent 패턴 (multi-agent/)
+- 에이전트 간 협업 패턴
+- 병렬 분석 및 파이프라인
+- 전문가 패널 패턴
 
 ---
 
 ## 사전 준비
 
 1. Python 3.11 이상 설치
-2. Ollama 설치 및 모델 다운로드
-3. 코드 에디터 (VS Code 또는 Cursor) 설치
+2. AI API 설정 (Gemini API 키 또는 AWS Bedrock)
+3. AI IDE 설치 (AWS Kiro 또는 Google Jules)
+4. Claude Code 설치
 
 자세한 환경 설정은 [SETUP.md](../SETUP.md)를 참고하세요.
 
@@ -91,4 +92,5 @@ Day 1을 마치면 다음을 할 수 있습니다:
 - [ ] AI 도구가 개발 생산성에 미치는 영향을 설명할 수 있다
 - [ ] K-shot, CoT 등 기본 프롬프팅 기법을 적용할 수 있다
 - [ ] RAG와 Tool Calling의 개념을 이해하고 구현할 수 있다
-- [ ] Cursor 또는 Claude Code를 사용하여 코드를 작성할 수 있다
+- [ ] Claude Code의 스킬과 에이전트를 활용할 수 있다
+- [ ] MCP를 통해 외부 도구를 연동할 수 있다
