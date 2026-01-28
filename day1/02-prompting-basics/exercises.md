@@ -1,31 +1,35 @@
 # 프롬프팅 기초 실습
 
-## 실습 환경 확인
+## 실습 환경 설정
+
+### Gemini 사용 시
 
 ```bash
-# Gemini 사용 시
-echo $GEMINI_API_KEY  # API 키가 설정되어 있어야 함
+cd gemini
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 
-# Bedrock 사용 시
-aws sts get-caller-identity  # AWS 자격증명 확인
+# .env 파일에 API 키 설정
+echo "GEMINI_API_KEY=your_key" > .env
+
+# 실행
+python app_gradio.py
 ```
 
----
+### Bedrock 사용 시
 
-## 폴더 구조
+```bash
+cd bedrock
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 
-실습 파일은 사용하는 AI 서비스에 따라 선택하세요:
+# AWS CLI가 설정되어 있어야 함
+aws sts get-caller-identity
 
-```
-02-prompting-basics/
-├── gemini/           # Google Gemini API 사용
-│   ├── k_shot_prompting.py
-│   ├── chain_of_thought.py
-│   └── self_consistency_prompting.py
-└── bedrock/          # Amazon Bedrock (Nova) 사용
-    ├── k_shot_prompting.py
-    ├── chain_of_thought.py
-    └── self_consistency_prompting.py
+# 실행
+python app_gradio.py
 ```
 
 ---
@@ -33,106 +37,86 @@ aws sts get-caller-identity  # AWS 자격증명 확인
 ## 실습 1: K-shot 프롬프팅
 
 ### 목표
-문자열을 뒤집는 작업을 K-shot 프롬프팅으로 성공시키세요.
-
-### 파일
-- Gemini: `gemini/k_shot_prompting.py`
-- Bedrock: `bedrock/k_shot_prompting.py`
+예시를 제공하여 원하는 출력 형식을 학습시키세요.
 
 ### 문제
-"httpstatus"를 뒤집어 "sutatsptth"를 출력해야 합니다.
+텍스트에서 정보를 추출하여 정해진 형식으로 출력해야 합니다.
 
 ### 단계
 
-1. 파일을 열고 `YOUR_SYSTEM_PROMPT`를 확인하세요
-2. 예시를 포함한 시스템 프롬프트를 작성하세요
-3. `python gemini/k_shot_prompting.py` (또는 `bedrock/...`)로 테스트하세요
-4. "SUCCESS"가 출력될 때까지 프롬프트를 개선하세요
-
-### 힌트
-
-```python
-# 이렇게 예시를 제공해보세요
-YOUR_SYSTEM_PROMPT = """
-당신은 문자열 뒤집기 전문가입니다.
-
-예시:
-- abc → cba
-- hello → olleh
-- test → tset
-
-규칙:
-1. 입력 문자열의 문자 순서를 뒤집습니다
-2. 결과만 출력하고 다른 설명은 하지 않습니다
-"""
-```
+1. Web UI에서 **K-shot Prompting** 탭 선택
+2. 먼저 시스템 프롬프트 없이 결과 확인
+3. 힌트를 참고하여 예시가 포함된 시스템 프롬프트 작성
+4. "시스템 프롬프트 적용" 결과가 형식에 맞게 출력되는지 확인
 
 ### 체크리스트
 
-- [ ] 예시를 3개 이상 포함했는가?
-- [ ] 출력 형식을 명확히 지정했는가?
-- [ ] 불필요한 설명을 하지 않도록 지시했는가?
+- [ ] 예시를 포함한 시스템 프롬프트를 작성했는가?
+- [ ] 출력 형식이 예시와 일관되게 나오는가?
+- [ ] 프롬프트 없이 vs 있을 때의 차이를 이해했는가?
 
 ---
 
 ## 실습 2: Chain of Thought
 
 ### 목표
-복잡한 수학 문제를 CoT 기법으로 해결하세요.
-
-### 파일
-- Gemini: `gemini/chain_of_thought.py`
-- Bedrock: `bedrock/chain_of_thought.py`
+단계별 사고를 유도하여 복잡한 문제를 해결하세요.
 
 ### 문제
-`3^12345 mod 100` 을 계산하여 `Answer: 43`을 출력해야 합니다.
+자전거 여행 거리 계산 문제를 단계별로 풀어야 합니다.
 
 ### 단계
 
-1. 파일을 열고 `YOUR_SYSTEM_PROMPT`를 확인하세요
-2. 단계별 사고를 유도하는 프롬프트를 작성하세요
-3. `python gemini/chain_of_thought.py` (또는 `bedrock/...`)로 테스트하세요
-4. "SUCCESS"가 출력될 때까지 프롬프트를 개선하세요
+1. Web UI에서 **Chain of Thought** 탭 선택
+2. 시스템 프롬프트 없이 실행하여 결과 확인
+3. "단계별로 생각하세요" 같은 유도 문구를 시스템 프롬프트에 추가
+4. 추론 과정이 명확하게 나오는지 확인
 
 ### 힌트
 
-```python
-YOUR_SYSTEM_PROMPT = """
-당신은 수학 문제를 단계별로 푸는 전문가입니다.
+```
+문제를 풀 때 다음 단계를 따르세요:
+1. 각 날의 이동 거리를 계산하세요
+2. 총 이동 거리를 구하세요
+3. 최종 답을 계산하세요
 
-문제 해결 과정:
-1. 문제를 분석합니다
-2. 필요한 수학적 개념을 파악합니다 (이 경우: 모듈러 연산의 주기성)
-3. 단계별로 계산합니다
-4. 중간 결과를 검증합니다
-5. 마지막 줄에 "Answer: <숫자>" 형식으로 답을 출력합니다
-
-차근차근 생각하면서 풀어봅시다.
-"""
+단계별로 차근차근 생각해보세요.
 ```
 
 ### 체크리스트
 
 - [ ] "단계별로", "차근차근" 같은 유도 문구를 사용했는가?
-- [ ] 출력 형식 (Answer: <숫자>)을 명시했는가?
-- [ ] 중간 과정을 보여주도록 유도했는가?
+- [ ] 중간 계산 과정이 보이는가?
+- [ ] 최종 답이 정확한가?
 
 ---
 
-## 실습 3: Self-Consistency (보너스)
+## 실습 3: Self-Consistency
 
 ### 목표
-여러 번의 추론을 통해 일관된 답을 얻는 원리를 이해하세요.
+여러 번의 분석을 종합하여 신뢰도 높은 결론을 도출하세요.
 
-### 파일
-- Gemini: `gemini/self_consistency_prompting.py`
-- Bedrock: `bedrock/self_consistency_prompting.py`
+### 문제
+스타트업 아이디어의 성공 가능성을 평가합니다.
 
 ### 단계
 
-1. 파일 코드를 읽고 Self-Consistency가 어떻게 구현되어 있는지 파악하세요
-2. `python gemini/self_consistency_prompting.py` (또는 `bedrock/...`)로 실행하세요
-3. 여러 번 실행하여 결과의 일관성을 확인하세요
+1. Web UI에서 **Self-Consistency** 탭 선택
+2. 실행 횟수를 5회로 설정
+3. 시스템 프롬프트에 분석 가이드라인 추가 (힌트 참고)
+4. 각 실행 결과와 종합 분석 비교
+
+### 관찰 포인트
+
+- 각 실행마다 어떤 점이 다른가?
+- 공통적으로 언급되는 장점/단점은?
+- 종합 분석이 개별 분석보다 균형 잡혀 있는가?
+
+### 체크리스트
+
+- [ ] 여러 번 실행 시 결과가 다양하게 나오는가?
+- [ ] 종합 분석이 개별 분석을 잘 요약하는가?
+- [ ] Self-Consistency의 장단점을 이해했는가?
 
 ---
 
@@ -174,7 +158,7 @@ YOUR_SYSTEM_PROMPT = """
 
 ### Self-Consistency
 
-- [ ] 다수결 방식의 원리를 이해한다
+- [ ] 종합 분석 방식의 원리를 이해한다
 - [ ] 비용과 정확도의 트레이드오프를 이해한다
 
 ---

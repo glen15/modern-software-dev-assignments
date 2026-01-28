@@ -14,19 +14,16 @@
 
 ---
 
-## 실습 파일
+## 실습 환경
 
-실습 파일은 사용하는 AI 서비스에 따라 선택하세요:
+사용하는 AI 서비스에 따라 폴더를 선택하세요:
 
-| 폴더 | AI 서비스 |
-|------|----------|
-| `gemini/` | Google Gemini API |
-| `bedrock/` | Amazon Bedrock (Nova) |
+| 폴더 | AI 서비스 | 실행 방법 |
+|------|----------|----------|
+| `gemini/` | Google Gemini API | `python app_gradio.py` |
+| `bedrock/` | Amazon Bedrock (Claude) | `python app_gradio.py` |
 
-각 폴더에 동일한 실습 파일이 있습니다:
-- `k_shot_prompting.py` - K-shot 프롬프팅 실습
-- `chain_of_thought.py` - Chain of Thought 실습
-- `self_consistency_prompting.py` - Self-Consistency 실습
+각 폴더의 README.md를 참고하여 환경을 설정하세요.
 
 ---
 
@@ -59,34 +56,11 @@ Few-shot:  예시 2~5개 + 질문
 출력: heureux (일관된 형식)
 ```
 
-### 실습: k_shot_prompting.py
+### 실습
 
-문자열 뒤집기 문제를 K-shot으로 해결합니다.
-
-```bash
-# Gemini 사용 시
-python gemini/k_shot_prompting.py
-
-# Bedrock 사용 시
-python bedrock/k_shot_prompting.py
-```
-
-**과제**: `YOUR_SYSTEM_PROMPT`에 예시를 포함한 프롬프트를 작성하세요.
-
-```python
-# 힌트: 이런 형식으로 예시를 제공하세요
-YOUR_SYSTEM_PROMPT = """
-당신은 문자열을 뒤집는 전문가입니다.
-
-예시:
-- hello → olleh
-- world → dlrow
-- python → nohtyp
-
-사용자가 제공하는 단어를 뒤집어서 출력하세요.
-다른 설명 없이 뒤집힌 단어만 출력하세요.
-"""
-```
+Web UI에서 **K-shot Prompting** 탭을 선택하고:
+1. 시스템 프롬프트에 예시를 포함한 프롬프트를 작성하세요
+2. "시스템 프롬프트 없이"와 "시스템 프롬프트 적용" 결과를 비교하세요
 
 ---
 
@@ -106,45 +80,24 @@ LLM에게 **단계별로 생각하도록** 유도하여 복잡한 추론 문제�
 
 **CoT 없이**
 ```
-Q: 3^12345 mod 100은?
+Q: 복잡한 수학 문제
 A: 43 (바로 답, 틀릴 확률 높음)
 ```
 
 **CoT 적용**
 ```
-Q: 3^12345 mod 100은?
+Q: 복잡한 수학 문제
 A: 단계별로 풀어보겠습니다.
-   1. 3의 거듭제곱 패턴을 찾습니다: 3, 9, 27, 81, 43, 29, 87, 61, 83, 49, 47, 41, 23, 69, 7, 21, 63, 89, 67, 1, ...
-   2. mod 100에서 3의 주기는 20입니다.
-   3. 12345 mod 20 = 5
-   4. 3^5 mod 100 = 243 mod 100 = 43
-   Answer: 43
+   1. 첫 번째 단계...
+   2. 두 번째 단계...
+   3. 최종 답: 43
 ```
 
-### 실습: chain_of_thought.py
+### 실습
 
-수학 문제를 CoT로 해결합니다.
-
-```bash
-python gemini/chain_of_thought.py  # 또는 bedrock/chain_of_thought.py
-```
-
-**과제**: `YOUR_SYSTEM_PROMPT`에 단계별 사고를 유도하는 프롬프트를 작성하세요.
-
-```python
-# 힌트
-YOUR_SYSTEM_PROMPT = """
-당신은 수학 문제를 단계별로 푸는 전문가입니다.
-
-문제를 풀 때:
-1. 먼저 문제를 이해하고 필요한 개념을 파악합니다
-2. 단계별로 풀이 과정을 보여줍니다
-3. 각 단계에서 계산 결과를 명시합니다
-4. 마지막 줄에 "Answer: <숫자>" 형식으로 최종 답을 출력합니다
-
-차근차근 생각해봅시다.
-"""
-```
+Web UI에서 **Chain of Thought** 탭을 선택하고:
+1. "단계별로 생각하세요" 같은 유도 문구를 시스템 프롬프트에 추가하세요
+2. 프롬프트 적용 전후의 추론 과정을 비교하세요
 
 ---
 
@@ -152,27 +105,26 @@ YOUR_SYSTEM_PROMPT = """
 
 ### 개념
 
-같은 문제에 대해 **여러 번 추론**하고, 가장 **일관된(많이 나온) 답**을 선택하는 기법입니다.
+같은 문제에 대해 **여러 번 추론**하고, 결과를 **종합 분석**하여 신뢰도 높은 답을 도출하는 기법입니다.
 
 ### 작동 방식
 
 ```
-문제: "15 + 27 = ?"
+문제: 스타트업 아이디어 평가
 
-시도 1: 42 ✓
-시도 2: 42 ✓
-시도 3: 41 ✗
-시도 4: 42 ✓
-시도 5: 42 ✓
+분석 1: 장점 A, B / 단점 X → 성공 가능성: 중
+분석 2: 장점 A, C / 단점 Y → 성공 가능성: 상
+분석 3: 장점 B, C / 단점 X, Z → 성공 가능성: 중
+...
 
-최종 답: 42 (4번 등장, 가장 일관됨)
+종합 분석: 공통 장점, 공통 단점, 의견이 갈린 부분 → 최종 평가
 ```
 
-### 실습: self_consistency_prompting.py
+### 실습
 
-```bash
-python gemini/self_consistency_prompting.py  # 또는 bedrock/self_consistency_prompting.py
-```
+Web UI에서 **Self-Consistency** 탭을 선택하고:
+1. 실행 횟수를 설정하세요 (3~10회)
+2. 각 실행 결과와 종합 분석을 확인하세요
 
 ---
 
@@ -182,17 +134,7 @@ python gemini/self_consistency_prompting.py  # 또는 bedrock/self_consistency_p
 |------|----------|------|
 | K-shot | 특정 형식/패턴 필요 | 예시를 보여줘라 |
 | CoT | 복잡한 추론 필요 | 단계별로 생각하게 해라 |
-| Self-Consistency | 높은 정확도 필요 | 여러 번 시도하고 투표해라 |
-
----
-
-## 연습 문제
-
-### 문제 1: K-shot 적용
-감정 분석 프롬프트를 K-shot으로 작성하세요.
-
-### 문제 2: CoT 적용
-"A 도시에서 B 도시까지 자동차로 3시간, B에서 C까지 2시간 걸린다. A에서 C까지 총 몇 시간?" 문제를 CoT로 풀어보세요.
+| Self-Consistency | 높은 신뢰도 필요 | 여러 번 시도하고 종합해라 |
 
 ---
 
