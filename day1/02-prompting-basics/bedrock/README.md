@@ -22,36 +22,16 @@ pip install -r requirements.txt
 AWS_REGION=us-east-1
 AWS_ACCESS_KEY_ID=your_access_key
 AWS_SECRET_ACCESS_KEY=your_secret_key
-BEDROCK_MODEL_ID=amazon.nova-lite-v1:0
 ```
 
 또는 AWS CLI가 설정되어 있다면 `.env` 없이도 동작합니다.
 
 ## 실행 방법
 
-### Web UI (권장)
-
-**Gradio 버전:**
 ```bash
 source .venv/bin/activate
 python app_gradio.py
 # http://127.0.0.1:7860 에서 실행
-```
-
-**Streamlit 버전:**
-```bash
-source .venv/bin/activate
-streamlit run app_streamlit.py
-# http://localhost:8501 에서 실행
-```
-
-### CLI 버전
-
-```bash
-source .venv/bin/activate
-python k_shot_prompting.py
-python chain_of_thought.py
-python self_consistency_prompting.py
 ```
 
 ## 프롬프팅 기법
@@ -59,25 +39,17 @@ python self_consistency_prompting.py
 ### 1. K-shot Prompting
 예시를 보여주고 패턴을 학습하게 하는 기법
 
-**문제:** 문자열 뒤집기 (`httpstatus` → `sutatsptth`)
-
-**힌트:** 시스템 프롬프트에 예시 추가
-```
-예시:
-- 'hello' -> 'olleh'
-- 'world' -> 'dlrow'
-```
+- 시스템 프롬프트에 예시를 추가하면 출력 형식을 지정할 수 있습니다
+- 예시의 형식을 따라 AI가 일관된 구조로 응답합니다
 
 ### 2. Chain of Thought
 단계별로 추론하도록 유도하는 기법
 
-**문제:** `3^12345 mod 100` 계산 (정답: 43)
-
-**힌트:** "Let's think step by step" 또는 "단계별로 생각해보세요" 추가
+- "Let's think step by step" 또는 "단계별로 생각해보세요" 추가
+- 복잡한 문제를 단계별로 풀도록 유도합니다
 
 ### 3. Self-Consistency
-여러 번 실행 후 다수결로 답을 결정하는 기법
+여러 번 실행 후 결과를 종합하는 기법
 
-**문제:** 자전거 여행 거리 계산 (정답: 25마일)
-
-**힌트:** 높은 temperature로 다양한 답변 생성 후 다수결
+- 높은 temperature로 다양한 관점의 답변 생성
+- 여러 분석 결과를 종합하여 신뢰도 높은 결론 도출
