@@ -15,7 +15,7 @@ load_dotenv()
 
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
-MODEL_ID = "gemini-1.5-flash"
+MODEL_ID = "gemini-2.0-flash"
 
 # 프롬프팅 예제 정의
 EXAMPLES = {
