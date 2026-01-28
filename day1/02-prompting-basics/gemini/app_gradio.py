@@ -50,7 +50,7 @@ EXAMPLES = {
     "chain_of_thought": {
         "name": "Chain of Thought",
         "description": "단계별로 추론하도록 유도하는 기법",
-        "user_prompt": """이 문제를 풀고, 마지막 줄에 "정답: <숫자>" 형식으로 최종 답을 적으세요.
+        "user_prompt": """질문에 답하세요.
 
 영희는 3일간 자전거 여행을 했습니다.
 - 첫째 날: 총 60km를 이동했고, 출발 후 20km 지점과 도착 15km 전에 휴식을 취했습니다.
