@@ -6,7 +6,7 @@ AWS Bedrock를 사용한 프롬프팅 기법 실습
 import os
 import re
 import json
-from collections import Counter
+import time
 
 import boto3
 import streamlit as st
@@ -24,7 +24,7 @@ def get_bedrock_client():
 
 bedrock = get_bedrock_client()
 
-MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "amazon.nova-lite-v1:0")
+MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
 
 # 프롬프팅 예제 정의
 EXAMPLES = {
@@ -33,69 +33,104 @@ EXAMPLES = {
         "description": "예시를 보여주고 패턴을 학습하게 하는 기법",
         "user_prompt": """다음 텍스트에서 정보를 추출하세요.
 
-박지민(28세)은 카카오에서 백엔드 개발자로 3년째 근무 중입니다.""",
-        "expected": "이름: 박지민\n나이: 28\n회사: 카카오\n직무: 백엔드 개발자\n경력: 3년",
+박지민(28세)은 A사에서 솔루션즈 아키텍트(SA)로 3년째 근무 중입니다. 주로 AWS와 Terraform을 사용하며, 최근에는 멀티 클라우드 전환 프로젝트를 리드하고 있습니다. 연봉은 8천만원이고, 재택근무를 주 2회 합니다.""",
         "temperature": 0.3,
-        "hint": """예시를 시스템 프롬프트에 추가해서 출력 형식을 지정해보세요:
+        "hint": """다음 예시를 시스템 프롬프트에 복사해보세요:
 
-입력: 김철수(32세)는 네이버에서 프론트엔드 개발자로 5년째 일하고 있습니다.
+입력: 김철수(32세)는 B사에서 솔루션즈 아키텍트(SA)로 5년째 일하고 있습니다. Azure와 Kubernetes 전문가이며, 현재 클라우드 마이그레이션 팀을 이끌고 있습니다. 연봉은 1억원이고, 풀 재택근무입니다.
 출력:
-이름: 김철수
-나이: 32
-회사: 네이버
-직무: 프론트엔드 개발자
-경력: 5년""",
+[기본정보]
+- 이름: 김철수
+- 나이: 32세
+- 경력: 5년
+
+[회사정보]
+- 회사: B사
+- 직무: 솔루션즈 아키텍트(SA)
+- 역할: 클라우드 마이그레이션 팀 리드
+
+[기술스택]
+- Azure, Kubernetes
+
+[근무조건]
+- 연봉: 1억원
+- 재택: 풀 재택근무""",
     },
     "Chain of Thought": {
         "key": "chain_of_thought",
         "description": "단계별로 추론하도록 유도하는 기법",
         "user_prompt": """이 문제를 풀고, 마지막 줄에 "정답: <숫자>" 형식으로 최종 답을 적으세요.
 
-3의 12345제곱을 100으로 나눈 나머지는 얼마인가요? (3^12345 mod 100)""",
-        "expected": "정답: 43",
+영희는 3일간 자전거 여행을 했습니다.
+- 첫째 날: 총 60km를 이동했고, 출발 후 20km 지점과 도착 15km 전에 휴식을 취했습니다.
+- 둘째 날: 첫째 날보다 15km 더 이동했습니다.
+- 셋째 날: 둘째 날 이동 거리의 절반만 이동했습니다.
+
+질문: 3일간 총 이동 거리에서 첫째 날 두 휴식 지점 사이의 거리를 빼면 얼마인가요?""",
+        "expected": "정답: 147.5",
         "temperature": 0.3,
-        "hint": "'단계별로 생각해보세요' 또는 'Let's think step by step'을 추가해보세요.",
+        "hint": """다음을 시스템 프롬프트에 복사해보세요:
+
+문제를 풀 때 다음 단계를 따르세요:
+1. 첫째 날 이동 거리와 두 휴식 지점 사이 거리를 계산하세요
+2. 둘째 날 이동 거리를 계산하세요
+3. 셋째 날 이동 거리를 계산하세요
+4. 3일간 총 이동 거리를 구하세요
+5. 최종 답을 계산하세요
+
+단계별로 차근차근 생각해보세요. Let's think step by step.""",
     },
     "Self-Consistency": {
         "key": "self_consistency",
-        "description": "여러 번 실행 후 다수결로 답을 결정하는 기법",
-        "user_prompt": """이 문제를 풀고, 마지막 줄에 "정답: <숫자>" 형식으로 최종 답을 적으세요.
+        "description": "여러 번 실행 후 결과를 종합하여 신뢰도 높은 답을 도출하는 기법",
+        "user_prompt": """다음 스타트업 아이디어의 성공 가능성을 평가해주세요.
 
-영희는 60km 자전거 여행 중 두 번 멈췄습니다. 첫 번째는 출발 후 20km 지점에서 멈췄고,
-두 번째는 도착 15km 전에 멈췄습니다. 첫 번째 정류장과 두 번째 정류장 사이의 거리는 몇 km인가요?""",
-        "expected": "정답: 25",
+아이디어: AI를 활용한 반려동물 건강 모니터링 서비스
+- 스마트 목걸이로 반려동물의 활동량, 심박수, 수면 패턴을 측정
+- AI가 이상 징후를 감지하면 보호자에게 알림
+- 월 구독료 15,000원
+- 타겟: 반려동물 양육 가구 (국내 약 600만 가구)
+
+장점, 단점, 리스크를 분석하고 성공 가능성을 "상/중/하"로 평가해주세요.""",
         "temperature": 1.0,
-        "hint": "높은 temperature로 다양한 답변을 생성하고 다수결로 결정합니다.",
+        "hint": """Self-Consistency는 동일한 질문을 여러 번 실행하고 결과를 종합하는 기법입니다.
+
+주관적 판단이 필요한 문제에서 AI도 매번 다른 관점으로 분석합니다.
+여러 분석 결과를 종합하면 더 균형잡힌 판단을 얻을 수 있습니다.
+
+시스템 프롬프트 예시:
+스타트업 아이디어를 평가할 때 다음을 분석하세요:
+1. 장점 (2-3가지)
+2. 단점 (2-3가지)
+3. 주요 리스크
+4. 성공 가능성 (상/중/하)
+
+간결하게 답변해주세요.""",
     },
 }
 
 
 def call_bedrock(system_prompt: str, user_prompt: str, temperature: float = 0.5) -> str:
-    """Call Bedrock Nova model and return the response text."""
-    messages = [{"role": "user", "content": [{"text": user_prompt}]}]
-
+    """Call Bedrock Claude model and return the response text."""
     body = {
-        "messages": messages,
-        "inferenceConfig": {
-            "temperature": temperature,
-            "maxTokens": 2048,
-        },
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 2048,
+        "temperature": temperature,
+        "messages": [{"role": "user", "content": user_prompt}],
     }
-
     if system_prompt:
-        body["system"] = [{"text": system_prompt}]
+        body["system"] = system_prompt
 
     response = bedrock.invoke_model(
         modelId=MODEL_ID,
         body=json.dumps(body),
     )
-
     response_body = json.loads(response["body"].read())
-    return response_body["output"]["message"]["content"][0]["text"]
+    return response_body["content"][0]["text"]
 
 
 def extract_final_answer(text: str) -> str:
-    """Extract the final '정답: ...' or 'Answer: ...' line from a verbose reasoning trace."""
+    """Extract the final answer from response text."""
     # 한글 "정답:" 패턴 먼저 시도
     matches = re.findall(r"(?mi)^\s*정답\s*:\s*(.+)\s*$", text)
     if matches:
@@ -113,13 +148,14 @@ def extract_final_answer(text: str) -> str:
         if num_match:
             return f"정답: {num_match.group(0)}"
         return f"정답: {value}"
-    return text.strip()
+
+    return text.strip()[:50]
 
 
 # Streamlit 앱 시작
 st.set_page_config(page_title="Prompting Basics", page_icon="🤖", layout="wide")
 
-st.title("🤖 Prompting Basics")
+st.title("Prompting Basics")
 st.markdown("### AWS Bedrock를 사용한 프롬프팅 기법 실습")
 st.caption(f"사용 모델: `{MODEL_ID}`")
 
@@ -135,14 +171,15 @@ for tab, (name, example) in zip(tabs, EXAMPLES.items()):
         with col1:
             st.markdown("##### User Prompt (문제)")
             st.code(example["user_prompt"], language=None)
-            st.info(f"💡 **힌트:** {example['hint']}")
+            with st.expander("💡 힌트 보기 (직접 시도해본 후 열어보세요)"):
+                st.code(example["hint"], language=None)
 
         with col2:
             st.markdown("##### System Prompt")
             system_prompt = st.text_area(
                 "프롬프팅 기법을 적용한 시스템 프롬프트를 입력하세요",
                 key=f"system_prompt_{example['key']}",
-                height=150,
+                height=200,
                 placeholder="여기에 시스템 프롬프트를 입력하세요..."
             )
 
@@ -156,67 +193,100 @@ for tab, (name, example) in zip(tabs, EXAMPLES.items()):
         # 결과 표시 영역
         if run_btn:
             if example["key"] == "self_consistency":
-                # 다중 실행
+                # Self-Consistency: 다중 실행 후 종합 분석
                 results = []
-                answers = []
+                full_responses = []
 
                 progress_bar = st.progress(0)
                 status_text = st.empty()
 
+                total_start = time.time()
+
                 for i in range(num_runs):
-                    status_text.text(f"실행 중... ({i+1}/{num_runs})")
+                    status_text.text(f"분석 중... ({i+1}/{num_runs})")
                     progress_bar.progress((i + 1) / num_runs)
 
                     try:
+                        start_time = time.time()
                         output = call_bedrock(system_prompt, example["user_prompt"], example["temperature"])
-                        final_answer = extract_final_answer(output)
-                        results.append({"run": i + 1, "output": output, "answer": final_answer})
-                        answers.append(final_answer.strip())
+                        elapsed = time.time() - start_time
+
+                        results.append({"run": i + 1, "output": output, "time": elapsed})
+                        full_responses.append(f"분석 {i+1}: {output}")
                     except Exception as e:
                         st.error(f"실행 {i+1} 오류: {str(e)}")
+
+                # 종합 분석 요청
+                status_text.text("종합 분석 중...")
+                try:
+                    synthesis_prompt = f"""다음은 동일한 스타트업 아이디어에 대한 {num_runs}개의 독립적인 분석입니다.
+
+{chr(10).join(full_responses)}
+
+위 분석들을 종합하여:
+1. 공통적으로 언급된 장점
+2. 공통적으로 언급된 단점/리스크
+3. 의견이 갈린 부분
+4. 종합 평가 (상/중/하)
+
+를 정리해주세요."""
+
+                    synthesis_start = time.time()
+                    synthesis = call_bedrock("여러 분석 결과를 객관적으로 종합해주세요.", synthesis_prompt, 0.3)
+                    synthesis_time = time.time() - synthesis_start
+
+                except Exception as e:
+                    synthesis = f"종합 분석 오류: {str(e)}"
+                    synthesis_time = 0
+
+                total_time = time.time() - total_start
 
                 progress_bar.empty()
                 status_text.empty()
 
-                if answers:
-                    counts = Counter(answers)
-                    majority_answer, majority_count = counts.most_common(1)[0]
+                col_result1, col_result2 = st.columns(2)
 
-                    col_result1, col_result2 = st.columns([1, 2])
+                with col_result1:
+                    st.markdown(f"##### 각 실행 결과 (⏱️ 총 {total_time:.1f}초)")
+                    with st.container(height=400):
+                        for r in results:
+                            st.markdown(f"**--- 분석 {r['run']} ({r['time']:.1f}초) ---**")
+                            st.text(r["output"])
+                            st.divider()
 
-                    with col_result1:
-                        st.metric("다수결 결과", majority_answer, f"{majority_count}/{num_runs}")
-
-                        st.markdown("**답변 분포:**")
-                        for ans, cnt in counts.most_common():
-                            st.write(f"- `{ans}`: {cnt}회")
-
-                    with col_result2:
-                        with st.expander("상세 결과 보기", expanded=True):
-                            for r in results:
-                                st.markdown(f"**실행 {r['run']}** - 추출된 답: `{r['answer']}`")
-                                st.code(r["output"], language=None)
-                                st.divider()
+                with col_result2:
+                    st.markdown(f"##### 종합 분석 (⏱️ {synthesis_time:.1f}초)")
+                    with st.container(height=400):
+                        st.markdown(synthesis)
 
             else:
-                # 단일 실행
-                with st.spinner("실행 중..."):
-                    try:
-                        output = call_bedrock(system_prompt, example["user_prompt"], example["temperature"])
+                # K-shot, Chain of Thought: 시스템 프롬프트 유무 비교
+                col_result1, col_result2 = st.columns(2)
 
-                        if "정답:" in example["expected"] or "Answer:" in example["expected"]:
-                            final_answer = extract_final_answer(output)
-                        else:
-                            final_answer = output.strip()
+                with col_result1:
+                    st.markdown("##### 시스템 프롬프트 없이")
+                    with st.spinner("실행 중..."):
+                        try:
+                            start_time = time.time()
+                            output_without = call_bedrock("", example["user_prompt"], example["temperature"])
+                            time_without = time.time() - start_time
 
-                        col_result1, col_result2 = st.columns([1, 2])
+                            st.caption(f"⏱️ {time_without:.1f}초")
+                            with st.container(height=300):
+                                st.text(output_without)
+                        except Exception as e:
+                            st.error(f"오류 발생: {str(e)}")
 
-                        with col_result1:
-                            st.metric("추출된 결과", final_answer)
+                with col_result2:
+                    st.markdown("##### 시스템 프롬프트 적용")
+                    with st.spinner("실행 중..."):
+                        try:
+                            start_time = time.time()
+                            output_with = call_bedrock(system_prompt, example["user_prompt"], example["temperature"])
+                            time_with = time.time() - start_time
 
-                        with col_result2:
-                            st.markdown("**모델 출력:**")
-                            st.code(output, language=None)
-
-                    except Exception as e:
-                        st.error(f"오류 발생: {str(e)}")
+                            st.caption(f"⏱️ {time_with:.1f}초")
+                            with st.container(height=300):
+                                st.text(output_with)
+                        except Exception as e:
+                            st.error(f"오류 발생: {str(e)}")
